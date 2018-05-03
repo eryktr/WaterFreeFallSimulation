@@ -3,7 +3,7 @@ package waterfreefallsimulation;
 public class Model
 {
 
-    private final double ANIMATION_FPS = 60;
+    public final double ANIMATION_FPS = 60;
     private final double WATER_DENSITY = 1000;
     private final double GRAVITATIONAL_ACCELERATION = 10;
     private final double waterDepth, initialHeight, mass, side, initialSpeed;
@@ -23,16 +23,20 @@ public class Model
       currentAcceleration = GRAVITATIONAL_ACCELERATION;
       currentHeight = initialHeight;
       currentLowestHeight = initialHeight + side / 2;
-      currentHeightSubmerged = (currentLowestHeight >= waterLevel) ? (Math.min(currentLowestHeight - waterLevel, side)) : 0;
+      currentHeightSubmerged = (currentLowestHeight <= waterLevel) ? (Math.min(waterLevel - currentLowestHeight, side)) : 0;
+      System.out.println(currentHeightSubmerged);
       currentVolumeSubmerged = side * side * currentHeightSubmerged;
     }
 
     public void update()
     {
         currentSpeed = currentSpeed + currentAcceleration * TIME_PERIOD;
-        currentHeight = currentHeight - currentSpeed * TIME_PERIOD;
-        currentLowestHeight = currentLowestHeight + side/2;
-        currentAcceleration = GRAVITATIONAL_ACCELERATION - WATER_DENSITY * GRAVITATIONAL_ACCELERATION * currentVolumeSubmerged / mass;
+        currentHeight = currentHeight + currentSpeed * TIME_PERIOD;
+        currentLowestHeight = currentHeight - side/2;
+        currentHeightSubmerged =  (currentLowestHeight <= waterLevel) ? (Math.min(waterLevel - currentLowestHeight, side)) : 0;
+        currentVolumeSubmerged = side * side * currentHeightSubmerged;
+        currentAcceleration = -GRAVITATIONAL_ACCELERATION + (WATER_DENSITY * GRAVITATIONAL_ACCELERATION * currentVolumeSubmerged) / mass;
+        System.out.printf("Current lowest height: %f; current height submerged: %f; water level: %f; ACCELERATION: %f", currentLowestHeight, currentHeightSubmerged, waterLevel, currentAcceleration);
 
     }
 
@@ -60,6 +64,8 @@ public class Model
     {
         return side;
     }
+
+    public double getCurrentHeight() {return currentHeight;}
 
     public void setPaneWidth(double paneWidth) {this.paneWidth = paneWidth; }
 

@@ -1,5 +1,6 @@
 package waterfreefallsimulation;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -17,6 +18,28 @@ public class PopupController
 
     private double paneWidth, paneHeight;
 
+    private class Timer extends Thread
+    {
+        public synchronized void run()
+        {
+
+            while(true)
+            {
+                try
+                {
+                    wait(100);
+                    runSimulation();
+                    System.out.println("I work");
+
+                }
+                catch (InterruptedException ex)
+                {
+
+                }
+            }
+        }
+    }
+
     public void initialize()
     {
         model = Controller.getModel();
@@ -24,6 +47,8 @@ public class PopupController
         setUpPane();
         initializeWater();
         initializeObject();
+        Timer timer = new Timer();
+        timer.start();
     }
 
     public void setControllerInstance(Controller controllerInstance)
@@ -58,11 +83,17 @@ public class PopupController
     {
         model.setPaneWidth(simulationPane.getPrefWidth());
         model.setPaneHeight(simulationPane.getPrefHeight());
-        model.setWaterLevel(simulationPane.getPrefHeight() - model.getWaterDepth());
+        model.setWaterLevel(waterRectangle.getY());
     }
     public void runSimulation()
     {
+        model.update();
+        Platform.runLater(() -> updateSimulation());
+    }
 
+    public void updateSimulation()
+    {
+        object.setY(simulationPane.getPrefHeight() - model.getWaterDepth() -model.getCurrentHeight() - model.getSide() / 2);
     }
 
 
