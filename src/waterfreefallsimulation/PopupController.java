@@ -27,7 +27,7 @@ public class PopupController
             {
                 try
                 {
-                    wait(100);
+                    wait((long)(1000 * 1 / model.ANIMATION_FPS));
                     runSimulation();
                     System.out.println("I work");
 

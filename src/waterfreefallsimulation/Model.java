@@ -3,7 +3,7 @@ package waterfreefallsimulation;
 public class Model
 {
 
-    public final double ANIMATION_FPS = 60;
+    public final double ANIMATION_FPS = 50;
     private final double WATER_DENSITY = 1000;
     private final double GRAVITATIONAL_ACCELERATION = 10;
     private final double waterDepth, initialHeight, mass, side, initialSpeed;
@@ -35,8 +35,12 @@ public class Model
         currentLowestHeight = currentHeight - side/2;
         currentHeightSubmerged =  (currentLowestHeight <= waterLevel) ? (Math.min(waterLevel - currentLowestHeight, side)) : 0;
         currentVolumeSubmerged = side * side * currentHeightSubmerged;
-        currentAcceleration = -GRAVITATIONAL_ACCELERATION + (WATER_DENSITY * GRAVITATIONAL_ACCELERATION * currentVolumeSubmerged) / mass;
+        currentAcceleration = -GRAVITATIONAL_ACCELERATION + (WATER_DENSITY * GRAVITATIONAL_ACCELERATION * currentVolumeSubmerged) / mass - (Math.signum(currentSpeed) *1.05 /mass  * currentSpeed * currentSpeed);
         System.out.printf("Current lowest height: %f; current height submerged: %f; water level: %f; ACCELERATION: %f", currentLowestHeight, currentHeightSubmerged, waterLevel, currentAcceleration);
+        if(currentVolumeSubmerged > 0)
+        {
+            currentAcceleration -= Math.signum(currentSpeed) * 10000 / mass * currentSpeed * currentSpeed;
+        }
 
     }
 
